@@ -1,0 +1,27 @@
+services:
+  livekit:
+    image: livekit/livekit-server:latest
+    container_name: livekit-server
+    command: --config /etc/livekit.yaml
+    volumes:
+      - ./livekit/livekit.yaml:/etc/livekit.yaml
+    ports:
+      - "7880:7880"
+      - "7881:7881"
+      - "50000-60000:50000-60000/udp"
+    restart: always
+
+  api:
+    build: ../apps/api
+    container_name: node-api
+    ports:
+      - "3000:3000"
+    env_file: ../.env
+    depends_on:
+      - livekit
+
+  web:
+    build: ../apps/web
+    container_name: frontend-app
+    ports:
+      - "80:3000" #porta que o front usar, se der erro no futuro checar aqui
